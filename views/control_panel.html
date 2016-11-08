@@ -1,0 +1,61 @@
+<a herf="#" name={{control.id}} onclick="CONTROL_PANEL.onClickControl(event);">{{control.name}}</a>
+<ul id={{control.id}} style="display:none">
+{% for item in control.items %}        
+  {% if item.type.indexOf("image") != 0 %}
+    <li>
+  {% endif %}
+  {% if item.type.indexOf("text") == 0 %}
+    {{item.name}}<input id={{item.id}} name={{item.object}} type="text" size={{item.size}} value={{values[item.id]}} onchange="CONTROL_PANEL.onChanged(event);"/>
+  {% endif %}
+  {% if item.type.indexOf("button") == 0 %}
+    <input id={{item.id}} type="button" size={{item.size}} value={{item.name}} onclick="CONTROL_PANEL.onClickButton(event);"/>
+  {% endif %}
+  {% if item.type.indexOf("image") == 0 %}
+    <img id={{item.id}} src="image/{{item.type}}.png" width={{item.size}} name={{item.name}} draggable="true" ondragstart="CONTROL_PANEL.onDrag(event)">
+  {% endif %}
+  {% if item.type.indexOf("combobox") == 0 %}
+    {{item.name}}<select id={{item.id}} name={{item.id}} value={{values[item.id]}} onchange="CONTROL_PANEL.onChanged(event);">
+    {% for subItem in item.sub %}
+      {% if subItem.id == values[item.id] %}
+        <option value={{subItem.id}} name={{subItem.name}} selected>{{subItem.name}}</option>";
+      {% else %}
+        <option value={{subItem.id}} name={{subItem.name}}>{{subItem.name}}</option>";
+      {% endif %}
+    {% endfor %}
+    </select>
+
+    {% for subItem in item.sub %}
+      {% if subItem.id == values[item.id] %}
+        <ul id={{subItem.id}}>
+      {% else %}
+        <ul id={{subItem.id}} style="display:none">
+      {% endif %}
+      {% for subItem2 in subItem.items %}
+        <li>
+        {% if subItem2.type.indexOf("text") == 0 %}
+          {{subItem2.name}}<input id={{subItem2.id}} name={{subItem2.object}} type="text" size={{subItem2.size}} value={{values[subItem2.id]}} onchange="CONTROL_PANEL.onChanged(event);"/>
+        {% endif %}
+        {% if subItem2.type.indexOf("button") == 0 %}
+          <input id={{subItem2.id}} type="button" size={{subItem2.size}} value={{values[subItem2.id]}} onchange="CONTROL_PANEL.onChanged(event);"/>
+        {% endif %}
+        {% if subItem2.type.indexOf("combobox") == 0 %}
+          <select id={{subItem2.id}} name={{subItem2.id}} value={{values[subItem2.id]}} onchange="CONTROL_PANEL.onChanged(event);">
+          {% for subItem3 in subItem2.sub %}
+            {% if subItem3.id == values[item.id] %}
+              <option value={{subItem3.id}} name={{subItem3.name}} selected>{{subItem3.name}}</option>";
+            {% else %}
+              <option value={{subItem3.id}} name={{subItem3.name}}>{{subItem3.name}}</option>";
+            {% endif %}
+          {% endfor %}
+          </select>
+        {% endif %}
+        </li>
+      {% endfor %}
+      </ul>
+    {% endfor %}
+  {% endif %}
+  {% if item.type.indexOf("image") != 0 %}
+    </li>
+  {% endif %}
+{% endfor %}
+</ul>

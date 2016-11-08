@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Dashboard Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="styles/dashboard.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">3D Editer</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <form class="navbar-form navbar-right">
+            <div class="form-group">
+              <input type="text" placeholder="Email" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="password" placeholder="Password" class="form-control">
+            </div>
+            <button type="button" class="btn btn-success">Sign in</button>
+          </form>
+        </div><!--/.navbar-collapse -->
+      </div>
+    </nav>
+
+    <div class="col-sm-3 col-md-2 sidebar">
+      <dl class="nav nav-sidebar">
+        {% for values in parameters.initial_values %}
+          {% for control in parameters.controls %}
+            {% include './control_panel.html' %}
+          {% endfor %}
+        {% endfor %}
+      </dl>
+    </div>
+
+    <div id="main" class="col-sm-9 col-md-offset-3 col-md-10 col-md-offset-2 main">
+      <div id="viewer"></div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js" integrity="sha384-THPy051/pYDQGanwU6poAc/hOdQxjnOEXzbT+OuUAFqNqFjL+4IGLBgCJC3ZOShY" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="bower_components/jquery/dist/jquery.min.js"><\/script>')</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js" integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+		<script src="bower_components/three/build/three.js"></script>
+		<script src="bower_components/three/js/Detector.js"></script>
+		<script src="bower_components/three/js/controls/OrbitControls.js"></script>
+		<script src="bower_components/three/js/libs/stats.min.js"></script>
+		<script src="bower_components/three/js/Cloth.js"></script>
+		<script src="bower_components/control_panel.js"></script>
+    <script src="bower_components/three_editor.js"></script>
+
+    <script type="x-shader/x-fragment" id="fragmentShaderDepth">
+      #include <packing>
+      uniform sampler2D texture;
+      varying vec2 vUV;
+      void main() {
+        vec4 pixel = texture2D( texture, vUV );
+        if ( pixel.a < 0.5 ) discard;
+        gl_FragData[ 0 ] = packDepthToRGBA( gl_FragCoord.z );
+      }
+    </script>
+
+    <script type="x-shader/x-vertex" id="vertexShaderDepth">
+      varying vec2 vUV;
+      void main() {
+        vUV = 0.75 * uv;
+        vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+        gl_Position = projectionMatrix * mvPosition;
+      }
+    </script>
+
+    <script>
+      SCENE.initialize(document.getElementById('viewer'),
+                       document.getElementById('vertexShaderDepth').textContent,
+                       document.getElementById('fragmentShaderDepth').textContent);
+      SCENE.runAnimate();
+    </script>
+
+  </body>
+</html>
